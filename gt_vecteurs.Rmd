@@ -21,11 +21,13 @@ library(DiagrammeR)
 
 mermaid("
 flowchart LR
-  A[carreaux_200m_met.gpkg\n 2 287 884 carreaux] --> B[st_filter\n intersection spatiale]
-  C[communes.rds\n 44184 + 44055] --> B
-  B --> D[car_filtre.rds\n 1195 carreaux]
-  D --> E[Calcul revenu médian\n ind_snv / ind]
-  E --> F[Carte choroplèthe\n mapsf]
+  A[carreaux_200m_met.gpkg\n2 287 884 carreaux] --> B{st_filter}
+  C[communes.rds\n44184 + 44055] --> B
+  B --> D[car_filtre\n1195 carreaux]
+  D --> E{calcul\nind_snv / ind}
+  E --> F[car_filtre\navec revenu_moyen]
+  F --> G{mf_map\ntype choroplèthe}
+  G --> H[Carte des revenus\npar quartiles]
 ")
 ```
 

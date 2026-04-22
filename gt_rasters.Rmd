@@ -21,11 +21,15 @@ library(DiagrammeR)
 
 mermaid("
 flowchart LR
-  A[API IGN\n Géoportail] --> B[get_wms_raster\n happign]
-  C[communes.rds\n emprise spatiale] --> B
-  B --> D[Orthophoto\n SpatRaster terra]
-  D --> E[Seuillage NDVI\n détection végétation]
-  E --> F[Carte raster\n plot terra]
+  A[communes.rds\nemprise spatiale] --> B{get_wms_raster\nIGN Géoportail}
+  B --> C[ortho\nSpatRaster 3 bandes]
+  C --> D{extraction\nbande verte}
+  D --> E[vert\nbande 2]
+  E --> F{seuillage\nmean bande verte}
+  F --> G[vegetation\nTRUE / FALSE]
+  G --> H[Carte zones\nvégétalisées]
+  C --> I{mask + crop\npar commune}
+  I --> J[Comparaison\nSt-Nazaire / La Baule]
 ")
 ```
 

@@ -361,8 +361,8 @@ div.tocify {
 <h2>Traitement des données raster</h2>
 <div id="schéma-de-traitement" class="section level3">
 <h3>Schéma de traitement</h3>
-<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-808abd93e0136ea5e7f9" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-808abd93e0136ea5e7f9">{"x":{"diagram":"\nflowchart LR\n  A[API IGN\n Géoportail] --> B[get_wms_raster\n happign]\n  C[communes.rds\n emprise spatiale] --> B\n  B --> D[Orthophoto\n SpatRaster terra]\n  D --> E[Seuillage NDVI\n détection végétation]\n  E --> F[Carte raster\n plot terra]\n"},"evals":[],"jsHooks":[]}</script>
+<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-6a55021cfdbbcf28b10e" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-6a55021cfdbbcf28b10e">{"x":{"diagram":"\nflowchart LR\n  A[communes.rds\nemprise spatiale] --> B{get_wms_raster\nIGN Géoportail}\n  B --> C[ortho\nSpatRaster 3 bandes]\n  C --> D{extraction\nbande verte}\n  D --> E[vert\nbande 2]\n  E --> F{seuillage\nmean bande verte}\n  F --> G[vegetation\nTRUE / FALSE]\n  G --> H[Carte zones\nvégétalisées]\n  C --> I{mask + crop\npar commune}\n  I --> J[Comparaison\nSt-Nazaire / La Baule]\n"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="chargement-des-données" class="section level3">
 <h3>Chargement des données</h3>
