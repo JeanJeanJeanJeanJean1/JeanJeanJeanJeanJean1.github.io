@@ -17,20 +17,27 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ### Schéma de traitement
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-library(DiagrammeR)
-
-mermaid("
+htmltools::HTML('
+<div class="mermaid">
 flowchart LR
-  A[communes.rds\nemprise spatiale] --> B{get_wms_raster\nIGN Géoportail}
-  B --> C[ortho\nSpatRaster 3 bandes]
-  C --> D{extraction\nbande verte}
-  D --> E[vert\nbande 2]
-  E --> F{seuillage\nmean bande verte}
-  F --> G[vegetation\nTRUE / FALSE]
-  G --> H[Carte zones\nvégétalisées]
-  C --> I{mask + crop\npar commune}
-  I --> J[Comparaison\nSt-Nazaire / La Baule]
-")
+  A[communes.rds] --> B{get_wms_raster IGN}
+  B --> C[ortho SpatRaster 3 bandes]
+  C --> D{extraction bande verte}
+  D --> E[vert bande 2]
+  E --> F{seuillage mean}
+  F --> G[vegetation TRUE FALSE]
+  G --> H[Carte zones vegetalisees]
+  C --> I{mask crop par commune}
+  I --> J[Comparaison St-Nazaire La Baule]
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+window.addEventListener("load", function() {
+  mermaid.initialize({startOnLoad:false});
+  mermaid.init(undefined, document.querySelectorAll(".mermaid"));
+});
+</script>
+')
 ```
 
 ### Chargement des données
@@ -73,7 +80,6 @@ plot(vegetation, col = c("grey80", "darkgreen"),
 ### Comparaison entre les deux communes
 
 ```{r}
-# Masquer par commune
 saint_nazaire <- communes[communes$nom_officiel == "Saint-Nazaire", ]
 la_baule <- communes[communes$nom_officiel == "La Baule-Escoublac", ]
 

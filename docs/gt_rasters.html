@@ -33,15 +33,6 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<link href="site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet" />
-<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
-<script src="site_libs/d3-3.3.8/d3.min.js"></script>
-<script src="site_libs/dagre-0.4.0/dagre-d3.min.js"></script>
-<link href="site_libs/mermaid-0.3.0/dist/mermaid.css" rel="stylesheet" />
-<script src="site_libs/mermaid-0.3.0/dist/mermaid.slim.min.js"></script>
-<link href="site_libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
-<script src="site_libs/chromatography-0.1/chromatography.js"></script>
-<script src="site_libs/DiagrammeR-binding-1.0.11/DiagrammeR.js"></script>
 <link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
 
@@ -361,8 +352,27 @@ div.tocify {
 <h2>Traitement des données raster</h2>
 <div id="schéma-de-traitement" class="section level3">
 <h3>Schéma de traitement</h3>
-<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-1ae5542d242dc6236c0a" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-1ae5542d242dc6236c0a">{"x":{"diagram":"\nflowchart LR\n  A[communes.rds\nemprise spatiale] --> B{get_wms_raster\nIGN Géoportail}\n  B --> C[ortho\nSpatRaster 3 bandes]\n  C --> D{extraction\nbande verte}\n  D --> E[vert\nbande 2]\n  E --> F{seuillage\nmean bande verte}\n  F --> G[vegetation\nTRUE / FALSE]\n  G --> H[Carte zones\nvégétalisées]\n  C --> I{mask + crop\npar commune}\n  I --> J[Comparaison\nSt-Nazaire / La Baule]\n"},"evals":[],"jsHooks":[]}</script>
+
+<div class="mermaid">
+flowchart LR
+  A[communes.rds] --> B{get_wms_raster IGN}
+  B --> C[ortho SpatRaster 3 bandes]
+  C --> D{extraction bande verte}
+  D --> E[vert bande 2]
+  E --> F{seuillage mean}
+  F --> G[vegetation TRUE FALSE]
+  G --> H[Carte zones vegetalisees]
+  C --> I{mask crop par commune}
+  I --> J[Comparaison St-Nazaire La Baule]
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+window.addEventListener("load", function() {
+  mermaid.initialize({startOnLoad:false});
+  mermaid.init(undefined, document.querySelectorAll(".mermaid"));
+});
+</script>
+
 </div>
 <div id="chargement-des-données" class="section level3">
 <h3>Chargement des données</h3>

@@ -17,21 +17,23 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ### Schéma de traitement
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-library(DiagrammeR)
-
-mermaid("
+htmltools::HTML('
+<div class="mermaid">
 flowchart LR
-  A[carreaux_200m_met.gpkg\n2 287 884 carreaux] --> B{st_filter}
-  C[communes.rds\n44184 + 44055] --> B
-  B --> D[car_filtre\n1195 carreaux]
-  D --> E{calcul\nind_snv / ind}
-  E --> F[car_filtre\navec revenu_moyen]
-  F --> G{mf_map\ntype choroplèthe}
-  G --> H[Carte des revenus\npar quartiles]
-")
+  A[carreaux_200m_met.gpkg] --> B{st_filter}
+  C[communes.rds] --> B
+  B --> D[car_filtre 1195 carreaux]
+  D --> E{calcul ind_snv / ind}
+  E --> F[car_filtre avec revenu_moyen]
+  F --> G{mf_map choroplèthe}
+  G --> H[Carte des revenus]
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true});</script>
+')
 ```
 
-### Chargement des données
+
 
 ```{r message=FALSE, warning=FALSE}
 library(sf)
