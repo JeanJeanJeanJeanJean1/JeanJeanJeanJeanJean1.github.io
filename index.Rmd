@@ -1,0 +1,28 @@
+---
+title: "Inégalités de revenus et votes — Saint-Nazaire / La Baule"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cosmo
+    highlight: tango
+---
+
+## Introduction
+
+Ce projet compare les inégalités de revenus entre Saint-Nazaire (44109),
+ville ouvrière et portuaire, et La Baule-Escoublac (44055), ville balnéaire
+aisée, en les mettant en relation avec les résultats des élections
+municipales de 2026 dans le département de Loire-Atlantique.
+
+## Problématique
+
+Dans quelle mesure les inégalités de revenus entre deux communes de
+Loire-Atlantique se reflètent-elles dans les comportements électoraux
+lors des municipales 2026 ?
+
+## Données utilisées
+
+- **Filosofi 2021** (INSEE) : revenus médians par carreau de 200m
+- **Élections municipales 2026** (data.gouv.fr) : résultats 1er et 2e tour
+- **Orthophotos IGN** : images satellitaires récupérées via le package happign
