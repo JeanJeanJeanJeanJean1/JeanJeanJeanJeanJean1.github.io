@@ -8,6 +8,10 @@ output:
     highlight: tango
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```
+
 ## Traitement des données vecteur
 
 ### Schéma de traitement
