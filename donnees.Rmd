@@ -1,0 +1,57 @@
+---
+title: "Description des données"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cosmo
+    highlight: tango
+---
+
+## Sources de données
+
+### Filosofi 2021 — INSEE
+Les données Filosofi (Fichier localisé social et fiscal) sont produites par 
+l'INSEE. Elles fournissent des indicateurs de revenus à l'échelle de carreaux 
+de 200m × 200m, couvrant l'ensemble de la métropole française.
+
+- **Variable principale utilisée** : `ind_snv` (somme des niveaux de vie des individus du carreau)
+- **Année de référence** : 2021
+- **Format** : GeoPackage (.gpkg), projection Lambert-93 (RGF93)
+- **Source** : https://www.insee.fr/fr/statistiques/7655475
+
+### Élections municipales 2026 — data.gouv.fr
+Résultats officiels des élections municipales de 2026 pour les communes de 
+Saint-Nazaire (44109) et La Baule-Escoublac (44055).
+
+- **1er tour** : résultats par liste et par commune
+- **2e tour** : résultats définitifs
+- **Format** : CSV
+- **Source** : https://www.data.gouv.fr
+
+### Orthophotos IGN
+Images aériennes haute résolution récupérées via le package `happign`, 
+qui interroge le Géoportail de l'IGN.
+
+- **Résolution** : 20 cm/pixel
+- **Format** : raster (objet `SpatRaster` via le package `terra`)
+
+## Zone d'étude
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(sf)
+library(mapsf)
+
+communes <- readRDS("data/communes.rds")
+
+mf_map(communes, type = "base", col = "#d4e6f1", border = "steelblue", lwd = 2)
+mf_label(communes, var = "nom", halo = TRUE, cex = 0.9)
+mf_title("Zone d'étude : Saint-Nazaire et La Baule-Escoublac")
+```
+
+## Limites des données
+
+- Les carreaux Filosofi dont la population est inférieure à 11 individus 
+sont masqués pour des raisons de confidentialité statistique.
+- Les résultats électoraux sont agrégés à l'échelle communale et ne 
+permettent pas une analyse infra-communale directe.

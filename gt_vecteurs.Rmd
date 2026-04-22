@@ -1,0 +1,73 @@
+---
+title: "GT Vecteurs — Revenus par carreaux"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cosmo
+    highlight: tango
+---
+
+## Traitement des données vecteur
+
+### Schéma de traitement
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(DiagrammeR)
+
+mermaid("
+flowchart LR
+  A[carreaux_200m_met.gpkg\n 2 287 884 carreaux] --> B[st_filter\n intersection spatiale]
+  C[communes.rds\n 44184 + 44055] --> B
+  B --> D[car_filtre.rds\n 1195 carreaux]
+  D --> E[Calcul revenu médian\n ind_snv / ind]
+  E --> F[Carte choroplèthe\n mapsf]
+")
+```
+
+### Chargement des données
+
+```{r message=FALSE, warning=FALSE}
+library(sf)
+library(mapsf)
+
+communes <- readRDS("data/communes.rds")
+car_filtre <- readRDS("data/car_filtre.rds")
+```
+
+### Calcul du revenu médian par carreau
+
+La variable `ind_snv` contient la somme des niveaux de vie de tous les 
+individus du carreau. On divise par `ind` (nombre d'individus) pour obtenir 
+le niveau de vie moyen par carreau.
+
+```{r}
+car_filtre$revenu_moyen <- car_filtre$ind_snv / car_filtre$ind
+summary(car_filtre$revenu_moyen)
+```
+
+### Carte des revenus
+
+```{r fig.width=10, fig.height=7}
+mf_map(communes, type = "base", col = "grey90", border = "white")
+mf_map(
+  car_filtre,
+  type = "choro",
+  var = "revenu_moyen",
+  breaks = "quantile",
+  nbreaks = 5,
+  pal = "Mint",
+  border = NA,
+  add = TRUE
+)
+mf_map(communes, type = "base", col = NA, border = "steelblue", lwd = 2, add = TRUE)
+mf_label(communes, var = "nom_officiel", halo = TRUE, cex = 0.8)
+mf_legend(
+  type = "choro",
+  val = levels(cut(car_filtre$revenu_moyen, breaks = quantile(car_filtre$revenu_moyen, probs = seq(0,1,0.2), na.rm = TRUE))),
+  pal = "Mint",
+  title = "Revenu moyen (€/an)"
+)
+mf_title("Revenus moyens par carreau de 200m — Saint-Nazaire et La Baule")
+mf_credits("Source : INSEE Filosofi 2021")
+```
