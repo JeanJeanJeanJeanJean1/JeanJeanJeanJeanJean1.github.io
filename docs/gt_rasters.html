@@ -11,7 +11,7 @@
 
 
 
-<title>GT Vecteurs — Revenus par carreaux</title>
+<title>GT Rasters — Orthophotos IGN</title>
 
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -454,60 +454,66 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">GT Vecteurs — Revenus par carreaux</h1>
+<h1 class="title toc-ignore">GT Rasters — Orthophotos IGN</h1>
 
 </div>
 
 
-<div id="traitement-des-données-vecteur" class="section level2">
-<h2>Traitement des données vecteur</h2>
+<div id="traitement-des-données-raster" class="section level2">
+<h2>Traitement des données raster</h2>
 <div id="schéma-de-traitement" class="section level3">
 <h3>Schéma de traitement</h3>
-<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-a53a32dfe99a52c90e06" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-a53a32dfe99a52c90e06">{"x":{"diagram":"\nflowchart LR\n  A[carreaux_200m_met.gpkg\n 2 287 884 carreaux] --> B[st_filter\n intersection spatiale]\n  C[communes.rds\n 44184 + 44055] --> B\n  B --> D[car_filtre.rds\n 1195 carreaux]\n  D --> E[Calcul revenu médian\n ind_snv / ind]\n  E --> F[Carte choroplèthe\n mapsf]\n"},"evals":[],"jsHooks":[]}</script>
+<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-805b239d7af5fdaa996a" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-805b239d7af5fdaa996a">{"x":{"diagram":"\nflowchart LR\n  A[API IGN\n Géoportail] --> B[get_wms_raster\n happign]\n  C[communes.rds\n emprise spatiale] --> B\n  B --> D[Orthophoto\n SpatRaster terra]\n  D --> E[Seuillage NDVI\n détection végétation]\n  E --> F[Carte raster\n plot terra]\n"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="chargement-des-données" class="section level3">
 <h3>Chargement des données</h3>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(mapsf)</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>communes <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/communes.rds&quot;</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>car_filtre <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/car_filtre.rds&quot;</span>)</span></code></pre></div>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(happign)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>communes <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/communes.rds&quot;</span>)</span></code></pre></div>
 </div>
-<div id="calcul-du-revenu-médian-par-carreau" class="section level3">
-<h3>Calcul du revenu médian par carreau</h3>
-<p>La variable <code>ind_snv</code> contient la somme des niveaux de vie
-de tous les individus du carreau. On divise par <code>ind</code> (nombre
-d’individus) pour obtenir le niveau de vie moyen par carreau.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>car_filtre<span class="sc">$</span>revenu_moyen <span class="ot">&lt;-</span> car_filtre<span class="sc">$</span>ind_snv <span class="sc">/</span> car_filtre<span class="sc">$</span>ind</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">summary</span>(car_filtre<span class="sc">$</span>revenu_moyen)</span></code></pre></div>
-<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##   13716   23776   26421   26624   29605   41658</code></pre>
+<div id="récupération-de-lorthophoto-ign" class="section level3">
+<h3>Récupération de l’orthophoto IGN</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>ortho <span class="ot">&lt;-</span> <span class="fu">get_wms_raster</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="at">x =</span> communes,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">layer =</span> <span class="st">&quot;ORTHOIMAGERY.ORTHOPHOTOS&quot;</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">res =</span> <span class="dv">5</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">crs =</span> <span class="dv">2154</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## 0...10...20...30...40...50...60...70...80...90...100 - done.</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">plot</span>(ortho)</span></code></pre></div>
+<p><img src="gt_rasters_files/figure-html/unnamed-chunk-3-1.png" alt="" width="672" /></p>
 </div>
-<div id="carte-des-revenus" class="section level3">
-<h3>Carte des revenus</h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">mf_map</span>(communes, <span class="at">type =</span> <span class="st">&quot;base&quot;</span>, <span class="at">col =</span> <span class="st">&quot;grey90&quot;</span>, <span class="at">border =</span> <span class="st">&quot;white&quot;</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">mf_map</span>(</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  car_filtre,</span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">&quot;choro&quot;</span>,</span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">var =</span> <span class="st">&quot;revenu_moyen&quot;</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">breaks =</span> <span class="st">&quot;quantile&quot;</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">nbreaks =</span> <span class="dv">5</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="at">pal =</span> <span class="st">&quot;Mint&quot;</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="at">border =</span> <span class="cn">NA</span>,</span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="at">add =</span> <span class="cn">TRUE</span></span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>)</span>
-<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="fu">mf_map</span>(communes, <span class="at">type =</span> <span class="st">&quot;base&quot;</span>, <span class="at">col =</span> <span class="cn">NA</span>, <span class="at">border =</span> <span class="st">&quot;steelblue&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="fu">mf_label</span>(communes, <span class="at">var =</span> <span class="st">&quot;nom_officiel&quot;</span>, <span class="at">halo =</span> <span class="cn">TRUE</span>, <span class="at">cex =</span> <span class="fl">0.8</span>)</span>
-<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="fu">mf_legend</span>(</span>
-<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">&quot;choro&quot;</span>,</span>
-<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>  <span class="at">val =</span> <span class="fu">levels</span>(<span class="fu">cut</span>(car_filtre<span class="sc">$</span>revenu_moyen, <span class="at">breaks =</span> <span class="fu">quantile</span>(car_filtre<span class="sc">$</span>revenu_moyen, <span class="at">probs =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="fl">0.2</span>), <span class="at">na.rm =</span> <span class="cn">TRUE</span>))),</span>
-<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="at">pal =</span> <span class="st">&quot;Mint&quot;</span>,</span>
-<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">&quot;Revenu moyen (€/an)&quot;</span></span>
-<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>)</span>
-<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="fu">mf_title</span>(<span class="st">&quot;Revenus moyens par carreau de 200m — Saint-Nazaire et La Baule&quot;</span>)</span>
-<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="fu">mf_credits</span>(<span class="st">&quot;Source : INSEE Filosofi 2021&quot;</span>)</span></code></pre></div>
-<p><img src="gt_vecteurs_files/figure-html/unnamed-chunk-4-1.png" alt="" width="960" /></p>
+<div id="seuillage-détection-des-zones-végétalisées"
+class="section level3">
+<h3>Seuillage — détection des zones végétalisées</h3>
+<p>On utilise la bande verte (bande 2) pour approximer un indice de
+végétation. Les zones avec une valeur élevée dans le vert correspondent
+à la végétation.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>vert <span class="ot">&lt;-</span> ortho[[<span class="dv">2</span>]]</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>seuil <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">values</span>(vert), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>vegetation <span class="ot">&lt;-</span> vert <span class="sc">&gt;</span> seuil</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="fu">plot</span>(vegetation, <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;grey80&quot;</span>, <span class="st">&quot;darkgreen&quot;</span>), </span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Zones végétalisées (seuillage bande verte)&quot;</span>)</span></code></pre></div>
+<p><img src="gt_rasters_files/figure-html/unnamed-chunk-4-1.png" alt="" width="672" /></p>
+</div>
+<div id="comparaison-entre-les-deux-communes" class="section level3">
+<h3>Comparaison entre les deux communes</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Masquer par commune</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>saint_nazaire <span class="ot">&lt;-</span> communes[communes<span class="sc">$</span>nom_officiel <span class="sc">==</span> <span class="st">&quot;Saint-Nazaire&quot;</span>, ]</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>la_baule <span class="ot">&lt;-</span> communes[communes<span class="sc">$</span>nom_officiel <span class="sc">==</span> <span class="st">&quot;La Baule-Escoublac&quot;</span>, ]</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>ortho_sn <span class="ot">&lt;-</span> <span class="fu">mask</span>(<span class="fu">crop</span>(ortho, saint_nazaire), <span class="fu">vect</span>(saint_nazaire))</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>ortho_lb <span class="ot">&lt;-</span> <span class="fu">mask</span>(<span class="fu">crop</span>(ortho, la_baule), <span class="fu">vect</span>(la_baule))</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="fu">plot</span>(ortho_sn, <span class="at">main =</span> <span class="st">&quot;Saint-Nazaire&quot;</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="fu">plot</span>(ortho_lb, <span class="at">main =</span> <span class="st">&quot;La Baule-Escoublac&quot;</span>)</span></code></pre></div>
+<p><img src="gt_rasters_files/figure-html/unnamed-chunk-5-1.png" alt="" width="672" /></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div>
 </div>
 </div>
 

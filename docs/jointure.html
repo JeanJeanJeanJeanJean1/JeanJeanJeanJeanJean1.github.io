@@ -11,7 +11,7 @@
 
 
 
-<title>GT Vecteurs — Revenus par carreaux</title>
+<title>Jointure — Revenus et votes</title>
 
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -33,15 +33,6 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<link href="site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet" />
-<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
-<script src="site_libs/d3-3.3.8/d3.min.js"></script>
-<script src="site_libs/dagre-0.4.0/dagre-d3.min.js"></script>
-<link href="site_libs/mermaid-0.3.0/dist/mermaid.css" rel="stylesheet" />
-<script src="site_libs/mermaid-0.3.0/dist/mermaid.slim.min.js"></script>
-<link href="site_libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
-<script src="site_libs/chromatography-0.1/chromatography.js"></script>
-<script src="site_libs/DiagrammeR-binding-1.0.11/DiagrammeR.js"></script>
 <link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
 
@@ -454,60 +445,97 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">GT Vecteurs — Revenus par carreaux</h1>
+<h1 class="title toc-ignore">Jointure — Revenus et votes</h1>
 
 </div>
 
 
-<div id="traitement-des-données-vecteur" class="section level2">
-<h2>Traitement des données vecteur</h2>
-<div id="schéma-de-traitement" class="section level3">
-<h3>Schéma de traitement</h3>
-<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-a53a32dfe99a52c90e06" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-a53a32dfe99a52c90e06">{"x":{"diagram":"\nflowchart LR\n  A[carreaux_200m_met.gpkg\n 2 287 884 carreaux] --> B[st_filter\n intersection spatiale]\n  C[communes.rds\n 44184 + 44055] --> B\n  B --> D[car_filtre.rds\n 1195 carreaux]\n  D --> E[Calcul revenu médian\n ind_snv / ind]\n  E --> F[Carte choroplèthe\n mapsf]\n"},"evals":[],"jsHooks":[]}</script>
-</div>
-<div id="chargement-des-données" class="section level3">
-<h3>Chargement des données</h3>
+<div id="jointure-des-données" class="section level2">
+<h2>Jointure des données</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(mapsf)</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>communes <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/communes.rds&quot;</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>car_filtre <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/car_filtre.rds&quot;</span>)</span></code></pre></div>
-</div>
-<div id="calcul-du-revenu-médian-par-carreau" class="section level3">
-<h3>Calcul du revenu médian par carreau</h3>
-<p>La variable <code>ind_snv</code> contient la somme des niveaux de vie
-de tous les individus du carreau. On divise par <code>ind</code> (nombre
-d’individus) pour obtenir le niveau de vie moyen par carreau.</p>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>car_filtre <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/car_filtre.rds&quot;</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>elec2_filtre <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/elec2_filtre.rds&quot;</span>)</span></code></pre></div>
+<div id="calcul-du-revenu-moyen-par-commune" class="section level3">
+<h3>Calcul du revenu moyen par commune</h3>
+<p>On agrège les carreaux par commune pour obtenir un revenu moyen
+communal.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>car_filtre<span class="sc">$</span>revenu_moyen <span class="ot">&lt;-</span> car_filtre<span class="sc">$</span>ind_snv <span class="sc">/</span> car_filtre<span class="sc">$</span>ind</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">summary</span>(car_filtre<span class="sc">$</span>revenu_moyen)</span></code></pre></div>
-<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##   13716   23776   26421   26624   29605   41658</code></pre>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>revenu_commune <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  car_filtre<span class="sc">$</span>revenu_moyen,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">by =</span> <span class="fu">list</span>(<span class="at">commune =</span> car_filtre<span class="sc">$</span>lcog_geo),</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">FUN =</span> mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">names</span>(revenu_commune) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;lcog_geo&quot;</span>, <span class="st">&quot;revenu_moyen&quot;</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>revenu_commune</span></code></pre></div>
+<pre><code>##           lcog_geo revenu_moyen
+## 1            44055     29062.63
+## 2       4405544069     26912.82
+## 3       4405544132     29188.90
+## 4       4405544135     35354.19
+## 5       4405544151     32317.41
+## 6       4406944055     24924.47
+## 7  440694405544151     23723.44
+## 8       4410344184     20365.69
+## 9       4413244055     29906.90
+## 10      4413244184     29655.93
+## 11           44135     25861.95
+## 12      4413544055     24951.63
+## 13 441354405544069     27169.67
+## 14      4415144055     30261.32
+## 15      4415144184     27022.63
+## 16           44184     25290.61
+## 17      4418444103     19946.41
+## 18      4418444132     29139.90
+## 19      4418444151     25893.04
+## 20      4418444210     21116.88
+## 21 442104410344184     20587.28
+## 22      4421044184     22085.32</code></pre>
 </div>
-<div id="carte-des-revenus" class="section level3">
-<h3>Carte des revenus</h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">mf_map</span>(communes, <span class="at">type =</span> <span class="st">&quot;base&quot;</span>, <span class="at">col =</span> <span class="st">&quot;grey90&quot;</span>, <span class="at">border =</span> <span class="st">&quot;white&quot;</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">mf_map</span>(</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  car_filtre,</span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">&quot;choro&quot;</span>,</span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">var =</span> <span class="st">&quot;revenu_moyen&quot;</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">breaks =</span> <span class="st">&quot;quantile&quot;</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">nbreaks =</span> <span class="dv">5</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="at">pal =</span> <span class="st">&quot;Mint&quot;</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="at">border =</span> <span class="cn">NA</span>,</span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="at">add =</span> <span class="cn">TRUE</span></span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>)</span>
-<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="fu">mf_map</span>(communes, <span class="at">type =</span> <span class="st">&quot;base&quot;</span>, <span class="at">col =</span> <span class="cn">NA</span>, <span class="at">border =</span> <span class="st">&quot;steelblue&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="fu">mf_label</span>(communes, <span class="at">var =</span> <span class="st">&quot;nom_officiel&quot;</span>, <span class="at">halo =</span> <span class="cn">TRUE</span>, <span class="at">cex =</span> <span class="fl">0.8</span>)</span>
-<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="fu">mf_legend</span>(</span>
-<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">&quot;choro&quot;</span>,</span>
-<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>  <span class="at">val =</span> <span class="fu">levels</span>(<span class="fu">cut</span>(car_filtre<span class="sc">$</span>revenu_moyen, <span class="at">breaks =</span> <span class="fu">quantile</span>(car_filtre<span class="sc">$</span>revenu_moyen, <span class="at">probs =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="fl">0.2</span>), <span class="at">na.rm =</span> <span class="cn">TRUE</span>))),</span>
-<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="at">pal =</span> <span class="st">&quot;Mint&quot;</span>,</span>
-<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">&quot;Revenu moyen (€/an)&quot;</span></span>
-<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>)</span>
-<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="fu">mf_title</span>(<span class="st">&quot;Revenus moyens par carreau de 200m — Saint-Nazaire et La Baule&quot;</span>)</span>
-<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="fu">mf_credits</span>(<span class="st">&quot;Source : INSEE Filosofi 2021&quot;</span>)</span></code></pre></div>
-<p><img src="gt_vecteurs_files/figure-html/unnamed-chunk-4-1.png" alt="" width="960" /></p>
+<div id="jointure-avec-les-résultats-électoraux" class="section level3">
+<h3>Jointure avec les résultats électoraux</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>elec2_filtre<span class="sc">$</span>code_insee <span class="ot">&lt;-</span> elec2_filtre<span class="sc">$</span>Code.commune</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>jointure <span class="ot">&lt;-</span> <span class="fu">merge</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  communes,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  elec2_filtre[, <span class="fu">c</span>(<span class="st">&quot;Code.commune&quot;</span>, <span class="st">&quot;Libellé.commune&quot;</span>, </span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>                    <span class="st">&quot;Nuance.liste.1&quot;</span>, <span class="st">&quot;Voix.1&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>                    <span class="st">&quot;Nuance.liste.2&quot;</span>, <span class="st">&quot;Voix.2&quot;</span>)],</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="at">by.x =</span> <span class="st">&quot;code_insee&quot;</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="at">by.y =</span> <span class="st">&quot;Code.commune&quot;</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>)</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>jointure<span class="sc">$</span>liste_gagnante <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  jointure<span class="sc">$</span>Voix<span class="fl">.1</span> <span class="sc">&gt;</span> jointure<span class="sc">$</span>Voix<span class="fl">.2</span>,</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>  jointure<span class="sc">$</span>Nuance.liste<span class="fl">.1</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  jointure<span class="sc">$</span>Nuance.liste<span class="fl">.2</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>)</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>jointure[, <span class="fu">c</span>(<span class="st">&quot;nom_officiel&quot;</span>, <span class="st">&quot;liste_gagnante&quot;</span>, <span class="st">&quot;Voix.1&quot;</span>, <span class="st">&quot;Voix.2&quot;</span>)]</span></code></pre></div>
+<pre><code>## Simple feature collection with 2 features and 4 fields
+## Geometry type: MULTIPOLYGON
+## Dimension:     XY
+## Bounding box:  xmin: 290046 ymin: 6694885 xmax: 309633.1 ymax: 6704529
+## Projected CRS: RGF93 v1 / Lambert-93
+##         nom_officiel liste_gagnante Voix.1 Voix.2
+## 1 La Baule-Escoublac            LUD   4516   1071
+## 2      Saint-Nazaire            LUG   5933   2869
+##                         geometry
+## 1 MULTIPOLYGON (((300057.1 67...
+## 2 MULTIPOLYGON (((304555.3 67...</code></pre>
+</div>
+<div id="carte-liste-gagnante-par-commune" class="section level3">
+<h3>Carte — liste gagnante par commune</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">mf_map</span>(jointure, <span class="at">type =</span> <span class="st">&quot;typo&quot;</span>, <span class="at">var =</span> <span class="st">&quot;liste_gagnante&quot;</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>       <span class="at">pal =</span> <span class="fu">c</span>(<span class="st">&quot;steelblue&quot;</span>, <span class="st">&quot;firebrick&quot;</span>),</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>       <span class="at">leg_title =</span> <span class="st">&quot;Liste gagnante (2e tour)&quot;</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="fu">mf_label</span>(jointure, <span class="at">var =</span> <span class="st">&quot;nom_officiel&quot;</span>, <span class="at">halo =</span> <span class="cn">TRUE</span>, <span class="at">cex =</span> <span class="fl">0.9</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="fu">mf_title</span>(<span class="st">&quot;Résultats 2e tour — Municipales 2026&quot;</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="fu">mf_credits</span>(<span class="st">&quot;Source : data.gouv.fr&quot;</span>)</span></code></pre></div>
+<p><img src="jointure_files/figure-html/unnamed-chunk-4-1.png" alt="" width="768" /></p>
 </div>
 </div>
 

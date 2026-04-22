@@ -10,7 +10,7 @@ output:
 
 ## Introduction
 
-Ce projet compare les inégalités de revenus entre Saint-Nazaire (44109),
+Ce projet compare les inégalités de revenus entre Saint-Nazaire (44184),
 ville ouvrière et portuaire, et La Baule-Escoublac (44055), ville balnéaire
 aisée, en les mettant en relation avec les résultats des élections
 municipales de 2026 dans le département de Loire-Atlantique.

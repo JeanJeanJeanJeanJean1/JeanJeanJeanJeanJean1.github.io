@@ -1,0 +1,79 @@
+---
+title: "GT Rasters — Orthophotos IGN"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cosmo
+    highlight: tango
+---
+
+## Traitement des données raster
+
+### Schéma de traitement
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(DiagrammeR)
+
+mermaid("
+flowchart LR
+  A[API IGN\n Géoportail] --> B[get_wms_raster\n happign]
+  C[communes.rds\n emprise spatiale] --> B
+  B --> D[Orthophoto\n SpatRaster terra]
+  D --> E[Seuillage NDVI\n détection végétation]
+  E --> F[Carte raster\n plot terra]
+")
+```
+
+### Chargement des données
+
+```{r message=FALSE, warning=FALSE}
+library(sf)
+library(terra)
+library(happign)
+
+communes <- readRDS("data/communes.rds")
+```
+
+### Récupération de l'orthophoto IGN
+
+```{r message=FALSE, warning=FALSE}
+ortho <- get_wms_raster(
+  x = communes,
+  layer = "ORTHOIMAGERY.ORTHOPHOTOS",
+  res = 5,
+  crs = 2154
+)
+
+plot(ortho)
+```
+
+### Seuillage — détection des zones végétalisées
+
+On utilise la bande verte (bande 2) pour approximer un indice de végétation.
+Les zones avec une valeur élevée dans le vert correspondent à la végétation.
+
+```{r}
+vert <- ortho[[2]]
+seuil <- mean(values(vert), na.rm = TRUE)
+vegetation <- vert > seuil
+
+plot(vegetation, col = c("grey80", "darkgreen"), 
+     main = "Zones végétalisées (seuillage bande verte)")
+```
+
+### Comparaison entre les deux communes
+
+```{r}
+# Masquer par commune
+saint_nazaire <- communes[communes$nom_officiel == "Saint-Nazaire", ]
+la_baule <- communes[communes$nom_officiel == "La Baule-Escoublac", ]
+
+ortho_sn <- mask(crop(ortho, saint_nazaire), vect(saint_nazaire))
+ortho_lb <- mask(crop(ortho, la_baule), vect(la_baule))
+
+par(mfrow = c(1, 2))
+plot(ortho_sn, main = "Saint-Nazaire")
+plot(ortho_lb, main = "La Baule-Escoublac")
+par(mfrow = c(1, 1))
+```

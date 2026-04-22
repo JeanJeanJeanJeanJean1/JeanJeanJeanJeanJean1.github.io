@@ -1,0 +1,42 @@
+---
+title: "Conclusion"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cosmo
+    highlight: tango
+---
+
+## Réponse à la problématique
+
+Notre analyse confirme que les inégalités de revenus entre Saint-Nazaire 
+et La Baule-Escoublac se reflètent clairement dans les comportements 
+électoraux lors des municipales 2026.
+
+**Saint-Nazaire** (commune ouvrière, revenus médians plus faibles) a voté 
+majoritairement à gauche (LDVG, 12 532 voix au 2e tour), tandis que 
+**La Baule-Escoublac** (commune balnéaire aisée) a voté à droite 
+(LUD, 4 516 voix au 2e tour).
+
+## Limites de l'analyse
+
+- L'analyse est menée à l'échelle communale — une analyse infra-communale 
+par bureau de vote aurait été plus fine mais nécessite les périmètres 
+des bureaux de vote.
+- Les carreaux Filosofi avec moins de 11 individus sont masqués pour 
+des raisons de confidentialité, ce qui crée des zones blanches dans 
+les communes les moins denses.
+- Le lien revenus/votes est une corrélation, pas une causalité — d'autres 
+facteurs (âge, catégorie socio-professionnelle, histoire locale) jouent 
+également un rôle.
+
+## Perspectives
+
+Une analyse plus fine pourrait intégrer :
+
+- Les données de revenus par décile pour mesurer les inégalités internes 
+à chaque commune
+- L'évolution des résultats électoraux sur plusieurs mandats
+- D'autres variables socio-démographiques (taux de chômage, niveau 
+de diplôme) issues du recensement INSEE

@@ -11,7 +11,7 @@
 
 
 
-<title>Description des données</title>
+<title>Conclusion</title>
 
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -343,66 +343,44 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Description des données</h1>
+<h1 class="title toc-ignore">Conclusion</h1>
 
 </div>
 
 
-<div id="sources-de-données" class="section level2">
-<h2>Sources de données</h2>
-<div id="filosofi-2021-insee" class="section level3">
-<h3>Filosofi 2021 — INSEE</h3>
-<p>Les données Filosofi (Fichier localisé social et fiscal) sont
-produites par l’INSEE. Elles fournissent des indicateurs de revenus à
-l’échelle de carreaux de 200m × 200m, couvrant l’ensemble de la
-métropole française.</p>
+<div id="réponse-à-la-problématique" class="section level2">
+<h2>Réponse à la problématique</h2>
+<p>Notre analyse confirme que les inégalités de revenus entre
+Saint-Nazaire et La Baule-Escoublac se reflètent clairement dans les
+comportements électoraux lors des municipales 2026.</p>
+<p><strong>Saint-Nazaire</strong> (commune ouvrière, revenus médians
+plus faibles) a voté majoritairement à gauche (LDVG, 12 532 voix au 2e
+tour), tandis que <strong>La Baule-Escoublac</strong> (commune balnéaire
+aisée) a voté à droite (LUD, 4 516 voix au 2e tour).</p>
+</div>
+<div id="limites-de-lanalyse" class="section level2">
+<h2>Limites de l’analyse</h2>
 <ul>
-<li><strong>Variable principale utilisée</strong> : <code>ind_snv</code>
-(somme des niveaux de vie des individus du carreau)</li>
-<li><strong>Année de référence</strong> : 2021</li>
-<li><strong>Format</strong> : GeoPackage (.gpkg), projection Lambert-93
-(RGF93)</li>
-<li><strong>Source</strong> : <a
-href="https://www.insee.fr/fr/statistiques/7655475"
-class="uri">https://www.insee.fr/fr/statistiques/7655475</a></li>
+<li>L’analyse est menée à l’échelle communale — une analyse
+infra-communale par bureau de vote aurait été plus fine mais nécessite
+les périmètres des bureaux de vote.</li>
+<li>Les carreaux Filosofi avec moins de 11 individus sont masqués pour
+des raisons de confidentialité, ce qui crée des zones blanches dans les
+communes les moins denses.</li>
+<li>Le lien revenus/votes est une corrélation, pas une causalité —
+d’autres facteurs (âge, catégorie socio-professionnelle, histoire
+locale) jouent également un rôle.</li>
 </ul>
 </div>
-<div id="élections-municipales-2026-data.gouv.fr"
-class="section level3">
-<h3>Élections municipales 2026 — data.gouv.fr</h3>
-<p>Résultats officiels des élections municipales de 2026 pour les
-communes de Saint-Nazaire (44184) et La Baule-Escoublac (44055).</p>
+<div id="perspectives" class="section level2">
+<h2>Perspectives</h2>
+<p>Une analyse plus fine pourrait intégrer :</p>
 <ul>
-<li><strong>1er tour</strong> : résultats par liste et par commune</li>
-<li><strong>2e tour</strong> : résultats définitifs</li>
-<li><strong>Format</strong> : CSV</li>
-<li><strong>Source</strong> : <a href="https://www.data.gouv.fr"
-class="uri">https://www.data.gouv.fr</a></li>
-</ul>
-</div>
-<div id="orthophotos-ign" class="section level3">
-<h3>Orthophotos IGN</h3>
-<p>Images aériennes haute résolution récupérées via le package
-<code>happign</code>, qui interroge le Géoportail de l’IGN.</p>
-<ul>
-<li><strong>Résolution</strong> : 20 cm/pixel</li>
-<li><strong>Format</strong> : raster (objet <code>SpatRaster</code> via
-le package <code>terra</code>)</li>
-</ul>
-</div>
-</div>
-<div id="zone-détude" class="section level2">
-<h2>Zone d’étude</h2>
-<p><img src="donnees_files/figure-html/unnamed-chunk-1-1.png" alt="" width="672" /></p>
-</div>
-<div id="limites-des-données" class="section level2">
-<h2>Limites des données</h2>
-<ul>
-<li>Les carreaux Filosofi dont la population est inférieure à 11
-individus sont masqués pour des raisons de confidentialité
-statistique.</li>
-<li>Les résultats électoraux sont agrégés à l’échelle communale et ne
-permettent pas une analyse infra-communale directe.</li>
+<li>Les données de revenus par décile pour mesurer les inégalités
+internes à chaque commune</li>
+<li>L’évolution des résultats électoraux sur plusieurs mandats</li>
+<li>D’autres variables socio-démographiques (taux de chômage, niveau de
+diplôme) issues du recensement INSEE</li>
 </ul>
 </div>
 

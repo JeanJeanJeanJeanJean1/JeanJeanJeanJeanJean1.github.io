@@ -1,0 +1,70 @@
+---
+title: "Jointure — Revenus et votes"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cosmo
+    highlight: tango
+---
+
+## Jointure des données
+
+```{r message=FALSE, warning=FALSE}
+library(sf)
+library(mapsf)
+
+communes <- readRDS("data/communes.rds")
+car_filtre <- readRDS("data/car_filtre.rds")
+elec2_filtre <- readRDS("data/elec2_filtre.rds")
+```
+
+### Calcul du revenu moyen par commune
+
+On agrège les carreaux par commune pour obtenir un revenu moyen communal.
+
+```{r}
+car_filtre$revenu_moyen <- car_filtre$ind_snv / car_filtre$ind
+
+revenu_commune <- aggregate(
+  car_filtre$revenu_moyen,
+  by = list(commune = car_filtre$lcog_geo),
+  FUN = mean, na.rm = TRUE
+)
+names(revenu_commune) <- c("lcog_geo", "revenu_moyen")
+revenu_commune
+```
+
+### Jointure avec les résultats électoraux
+
+```{r}
+elec2_filtre$code_insee <- elec2_filtre$Code.commune
+
+jointure <- merge(
+  communes,
+  elec2_filtre[, c("Code.commune", "Libellé.commune", 
+                    "Nuance.liste.1", "Voix.1",
+                    "Nuance.liste.2", "Voix.2")],
+  by.x = "code_insee",
+  by.y = "Code.commune"
+)
+
+jointure$liste_gagnante <- ifelse(
+  jointure$Voix.1 > jointure$Voix.2,
+  jointure$Nuance.liste.1,
+  jointure$Nuance.liste.2
+)
+
+jointure[, c("nom_officiel", "liste_gagnante", "Voix.1", "Voix.2")]
+```
+
+### Carte — liste gagnante par commune
+
+```{r fig.width=8, fig.height=6}
+mf_map(jointure, type = "typo", var = "liste_gagnante",
+       pal = c("steelblue", "firebrick"),
+       leg_title = "Liste gagnante (2e tour)")
+mf_label(jointure, var = "nom_officiel", halo = TRUE, cex = 0.9)
+mf_title("Résultats 2e tour — Municipales 2026")
+mf_credits("Source : data.gouv.fr")
+```
