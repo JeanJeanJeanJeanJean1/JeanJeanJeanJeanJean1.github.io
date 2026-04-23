@@ -63,21 +63,23 @@ et **41 658 €/an** (carreaux les plus aisés), avec une médiane à
 
 ```{r fig.width=10, fig.height=7}
 car_filtre$revenu_moyen <- car_filtre$ind_snv / car_filtre$ind
+car_filtre$revenu_mensuel <- car_filtre$revenu_moyen / 12
 
 mf_map(communes, type = "base", col = "grey90", border = "white")
 mf_map(
   car_filtre,
   type = "choro",
-  var = "revenu_moyen",
+  var = "revenu_mensuel",
   breaks = "quantile",
   nbreaks = 5,
   pal = "Mint",
   border = NA,
-  leg_title = "Revenu moyen (euros/an)",
+  leg_title = "Revenu mensuel moyen (euros/mois)",
+  leg_val_rnd = 0,
   add = TRUE
 )
 mf_map(communes, type = "base", col = NA, border = "steelblue", lwd = 2, add = TRUE)
 mf_label(communes, var = "nom_officiel", halo = TRUE, cex = 0.8)
-mf_title("Revenus moyens par carreau de 200m — Saint-Nazaire et La Baule")
+mf_title("Revenus mensuels par carreau de 200m — Saint-Nazaire et La Baule")
 mf_credits("Source : INSEE Filosofi 2021")
 ```
