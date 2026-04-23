@@ -51,13 +51,11 @@ car_filtre <- readRDS("data/car_filtre.rds")
 
 ### Calcul du revenu moyen par carreau
 
-La variable `ind_snv` contient la somme des niveaux de vie de tous les
-individus du carreau. On la divise par `ind` (nombre d'individus) pour
-obtenir le revenu moyen par carreau.
+Nous avons tout d'abord isolé les carreaux de nos communes.
+Une fois cela fait, nous avions la somme des revenus par carreau ainsi que le nombre de personne vivant dans le carreau. En divisant la première donnée par la seconde, nous avons obtenu le revenu mensuel moyen de chaque carreau.
+Nous avons ensuite fais une discrétisation en 5 quantiles. Ainsi nous pouvons reconnaitre visuellement les zones où les revenus sont les plus importants. Et les zones où les revenues sont les plus faibles.
+Attention, nombreux carreau ne contiennent pas de donnée et sont donc grisé car n'ayant pas assez d'habitant pour assurer le secret statistique.
 
-Les revenus varient entre **13 716 €/an** (carreaux les plus pauvres)
-et **41 658 €/an** (carreaux les plus aisés), avec une médiane à
-**26 421 €/an** sur l'ensemble des deux communes.
 
 ### Carte des revenus
 
@@ -80,6 +78,16 @@ mf_map(
 )
 mf_map(communes, type = "base", col = NA, border = "steelblue", lwd = 2, add = TRUE)
 mf_label(communes, var = "nom_officiel", halo = TRUE, cex = 0.8)
-mf_title("Revenus mensuels par carreau de 200m — Saint-Nazaire et La Baule")
+mf_title("Revenus mensuels par carreau de 200m — Saint-Nazaire et La Baule-Escoublac")
 mf_credits("Source : INSEE Filosofi 2021")
 ```
+
+### Conclusion
+
+
+On observe une différence importante entre les deux villes.
+
+La Baule-Escoublac a une très large dominante de carreau à revenu moyen de **3 472€/mois**, le quantile le plus important.
+Tandis que c'est à Saint-Nazaire que se trouve l'essentiel des quantiles au revenus les plus faibles, notamment ceux au revenu moyen de **1 143€/mois**
+
+On peut donc en conclure que les deux villes ont des inégalités de revenu importante, ce qui en fait une comparaison pertinente pour répondre à notre problématique.

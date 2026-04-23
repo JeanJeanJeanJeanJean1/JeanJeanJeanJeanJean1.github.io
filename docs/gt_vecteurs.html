@@ -374,17 +374,32 @@ window.addEventListener("load", function() {
 </div>
 <div id="calcul-du-revenu-moyen-par-carreau" class="section level3">
 <h3>Calcul du revenu moyen par carreau</h3>
-<p>La variable <code>ind_snv</code> contient la somme des niveaux de vie
-de tous les individus du carreau. On la divise par <code>ind</code>
-(nombre d’individus) pour obtenir le revenu moyen par carreau.</p>
-<p>Les revenus varient entre <strong>13 716 €/an</strong> (carreaux les
-plus pauvres) et <strong>41 658 €/an</strong> (carreaux les plus aisés),
-avec une médiane à <strong>26 421 €/an</strong> sur l’ensemble des deux
-communes.</p>
+<p>Nous avons tout d’abord isolé les carreaux de nos communes. Une fois
+cela fait, nous avions la somme des revenus par carreau ainsi que le
+nombre de personne vivant dans le carreau. En divisant la première
+donnée par la seconde, nous avons obtenu le revenu mensuel moyen de
+chaque carreau. Nous avons ensuite fais une discrétisation en 5
+quantiles. Ainsi nous pouvons reconnaitre visuellement les zones où les
+revenus sont les plus importants. Et les zones où les revenues sont les
+plus faibles. Attention, nombreux carreau ne contiennent pas de donnée
+et sont donc grisé car n’ayant pas assez d’habitant pour assurer le
+secret statistique.</p>
 </div>
 <div id="carte-des-revenus" class="section level3">
 <h3>Carte des revenus</h3>
 <p><img src="gt_vecteurs_files/figure-html/unnamed-chunk-3-1.png" alt="" width="960" /></p>
+</div>
+<div id="conclusion" class="section level3">
+<h3>Conclusion</h3>
+<p>On observe une différence importante entre les deux villes.</p>
+<p>La Baule-Escoublac a une très large dominante de carreau à revenu
+moyen de <strong>3 472€/mois</strong>, le quantile le plus important.
+Tandis que c’est à Saint-Nazaire que se trouve l’essentiel des quantiles
+au revenus les plus faibles, notamment ceux au revenu moyen de <strong>1
+143€/mois</strong></p>
+<p>On peut donc en conclure que les deux villes ont des inégalités de
+revenu importante, ce qui en fait une comparaison pertinente pour
+répondre à notre problématique.</p>
 </div>
 </div>
 
