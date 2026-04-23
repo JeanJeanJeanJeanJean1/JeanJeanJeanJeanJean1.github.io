@@ -28,8 +28,7 @@ de 200m × 200m, couvrant l'ensemble de la métropole française.
 Résultats officiels des élections municipales de 2026 pour les communes de 
 Saint-Nazaire (44184) et La Baule-Escoublac (44055).
 
-- **1er tour** : résultats par liste et par commune
-- **2e tour** : résultats définitifs
+
 - **Format** : CSV
 - **Source** : https://www.data.gouv.fr
 
