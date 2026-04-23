@@ -58,7 +58,8 @@ ortho <- get_wms_raster(
   x = communes,
   layer = "ORTHOIMAGERY.ORTHOPHOTOS",
   res = 5,
-  crs = 2154
+  crs = 2154,
+  verbose = FALSE
 )
 ```
 
