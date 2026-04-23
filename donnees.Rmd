@@ -44,12 +44,16 @@ qui interroge le Géoportail de l'IGN.
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(sf)
 library(mapsf)
+library(maptiles)
 
 communes <- readRDS("data/communes.rds")
-
-mf_map(communes, type = "base", col = "#d4e6f1", border = "steelblue", lwd = 2)
-mf_label(communes, var = "nom", halo = TRUE, cex = 0.9)
+communes_wgs84 <- st_transform(communes, 4326)
+tiles <- get_tiles(communes_wgs84, provider = "OpenStreetMap", zoom = 11)
+plot_tiles(tiles)
+mf_map(communes_wgs84, type = "base", col = "#d4e6f188", border = "steelblue", lwd = 2, add = TRUE)
+mf_label(communes_wgs84, var = "nom_officiel", halo = TRUE, cex = 0.9)
 mf_title("Zone d'étude : Saint-Nazaire et La Baule-Escoublac")
+mf_credits("Fond de carte : OpenStreetMap")
 ```
 
 ## Limites des données
