@@ -22,13 +22,11 @@ htmltools::HTML('
 flowchart LR
   A[communes.rds] --> B{get_wms_raster IGN}
   B --> C[ortho SpatRaster 3 bandes]
-  C --> D{extraction bande verte}
-  D --> E[vert bande 2]
-  E --> F{seuillage mean}
-  F --> G[vegetation TRUE FALSE]
-  G --> H[Carte zones vegetalisees]
-  C --> I{mask crop par commune}
-  I --> J[Comparaison St-Nazaire La Baule]
+  C --> D{mask + crop par commune}
+  D --> E[ortho_sn Saint-Nazaire]
+  D --> F[ortho_lb La Baule]
+  E --> G[Visualisation comparative]
+  F --> G
 </div>
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>
@@ -40,9 +38,8 @@ window.addEventListener("load", function() {
 ')
 ```
 
-### Chargement des données
-
 ```{r message=FALSE, warning=FALSE}
+# Chargement des données
 library(sf)
 library(terra)
 library(happign)
@@ -52,6 +49,10 @@ communes <- readRDS("data/communes.rds")
 
 ### Récupération de l'orthophoto IGN
 
+Les orthophotos sont des images aériennes géoréférencées produites par l'IGN 
+à une résolution de 5 mètres par pixel. Elles permettent de visualiser 
+l'occupation du sol et la morphologie urbaine des deux communes.
+
 ```{r message=FALSE, warning=FALSE}
 ortho <- get_wms_raster(
   x = communes,
@@ -59,27 +60,19 @@ ortho <- get_wms_raster(
   res = 5,
   crs = 2154
 )
-
-plot(ortho)
 ```
 
-### Seuillage — détection des zones végétalisées
+### Comparaison des morphologies urbaines
 
-On utilise la bande verte (bande 2) pour approximer un indice de végétation.
-Les zones avec une valeur élevée dans le vert correspondent à la végétation.
+Les orthophotos révèlent des morphologies urbaines très différentes entre 
+les deux communes. Saint-Nazaire présente un tissu urbain dense avec de 
+grands ensembles et des zones industrielles portuaires, reflet de son 
+histoire ouvrière. La Baule-Escoublac se caractérise par un tissu 
+pavillonnaire aéré, des espaces verts et une façade littorale, typique 
+d'une ville balnéaire aisée. Ces différences de morphologie urbaine sont 
+cohérentes avec les inégalités de revenus observées dans l'analyse vecteur.
 
-```{r}
-vert <- ortho[[2]]
-seuil <- mean(values(vert), na.rm = TRUE)
-vegetation <- vert > seuil
-
-plot(vegetation, col = c("grey80", "darkgreen"), 
-     main = "Zones végétalisées (seuillage bande verte)")
-```
-
-### Comparaison entre les deux communes
-
-```{r}
+```{r fig.width=10, fig.height=6}
 saint_nazaire <- communes[communes$nom_officiel == "Saint-Nazaire", ]
 la_baule <- communes[communes$nom_officiel == "La Baule-Escoublac", ]
 
@@ -87,7 +80,7 @@ ortho_sn <- mask(crop(ortho, saint_nazaire), vect(saint_nazaire))
 ortho_lb <- mask(crop(ortho, la_baule), vect(la_baule))
 
 par(mfrow = c(1, 2))
-plot(ortho_sn, main = "Saint-Nazaire")
-plot(ortho_lb, main = "La Baule-Escoublac")
+plot(ortho_sn, main = "Saint-Nazaire — tissu urbain dense")
+plot(ortho_lb, main = "La Baule-Escoublac — tissu pavillonnaire")
 par(mfrow = c(1, 1))
 ```

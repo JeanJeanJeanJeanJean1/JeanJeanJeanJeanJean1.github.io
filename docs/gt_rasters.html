@@ -315,10 +315,10 @@ div.tocify {
   <a href="donnees.html">Données</a>
 </li>
 <li>
-  <a href="gt_vecteurs.html">GT Vecteurs</a>
+  <a href="gt_rasters.html">GT Rasters</a>
 </li>
 <li>
-  <a href="gt_rasters.html">GT Rasters</a>
+  <a href="gt_vecteurs.html">GT Vecteurs</a>
 </li>
 <li>
   <a href="jointure.html">Jointure</a>
@@ -357,13 +357,11 @@ div.tocify {
 flowchart LR
   A[communes.rds] --> B{get_wms_raster IGN}
   B --> C[ortho SpatRaster 3 bandes]
-  C --> D{extraction bande verte}
-  D --> E[vert bande 2]
-  E --> F{seuillage mean}
-  F --> G[vegetation TRUE FALSE]
-  G --> H[Carte zones vegetalisees]
-  C --> I{mask crop par commune}
-  I --> J[Comparaison St-Nazaire La Baule]
+  C --> D{mask + crop par commune}
+  D --> E[ortho_sn Saint-Nazaire]
+  D --> F[ortho_lb La Baule]
+  E --> G[Visualisation comparative]
+  F --> G
 </div>
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>
@@ -374,25 +372,25 @@ window.addEventListener("load", function() {
 </script>
 
 </div>
-<div id="chargement-des-données" class="section level3">
-<h3>Chargement des données</h3>
-</div>
 <div id="récupération-de-lorthophoto-ign" class="section level3">
 <h3>Récupération de l’orthophoto IGN</h3>
+<p>Les orthophotos sont des images aériennes géoréférencées produites
+par l’IGN à une résolution de 5 mètres par pixel. Elles permettent de
+visualiser l’occupation du sol et la morphologie urbaine des deux
+communes.</p>
 <pre><code>## 0...10...20...30...40...50...60...70...80...90...100 - done.</code></pre>
-<p><img src="gt_rasters_files/figure-html/unnamed-chunk-3-1.png" alt="" width="672" /></p>
 </div>
-<div id="seuillage-détection-des-zones-végétalisées"
-class="section level3">
-<h3>Seuillage — détection des zones végétalisées</h3>
-<p>On utilise la bande verte (bande 2) pour approximer un indice de
-végétation. Les zones avec une valeur élevée dans le vert correspondent
-à la végétation.</p>
-<p><img src="gt_rasters_files/figure-html/unnamed-chunk-4-1.png" alt="" width="672" /></p>
-</div>
-<div id="comparaison-entre-les-deux-communes" class="section level3">
-<h3>Comparaison entre les deux communes</h3>
-<p><img src="gt_rasters_files/figure-html/unnamed-chunk-5-1.png" alt="" width="672" /></p>
+<div id="comparaison-des-morphologies-urbaines" class="section level3">
+<h3>Comparaison des morphologies urbaines</h3>
+<p>Les orthophotos révèlent des morphologies urbaines très différentes
+entre les deux communes. Saint-Nazaire présente un tissu urbain dense
+avec de grands ensembles et des zones industrielles portuaires, reflet
+de son histoire ouvrière. La Baule-Escoublac se caractérise par un tissu
+pavillonnaire aéré, des espaces verts et une façade littorale, typique
+d’une ville balnéaire aisée. Ces différences de morphologie urbaine sont
+cohérentes avec les inégalités de revenus observées dans l’analyse
+vecteur.</p>
+<p><img src="gt_rasters_files/figure-html/unnamed-chunk-4-1.png" alt="" width="960" /></p>
 </div>
 </div>
 

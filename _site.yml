@@ -6,10 +6,10 @@ navbar:
       href: index.html
     - text: "Données"
       href: donnees.html
-    - text: "GT Vecteurs"
-      href: gt_vecteurs.html
     - text: "GT Rasters"
       href: gt_rasters.html
+    - text: "GT Vecteurs"
+      href: gt_vecteurs.html
     - text: "Jointure"
       href: jointure.html
     - text: "Conclusion"
