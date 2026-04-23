@@ -49,9 +49,7 @@ communes <- readRDS("data/communes.rds")
 
 ### Récupération de l'orthophoto IGN
 
-Les orthophotos sont des images aériennes géoréférencées produites par l'IGN 
-à une résolution de 5 mètres par pixel. Elles permettent de visualiser 
-l'occupation du sol et la morphologie urbaine des deux communes.
+Les orthophotos sont des images aériennes géoréférencées produites par l'IGN à une résolution de 5 mètres par pixel. Elles permettent de visualiser  l'occupation du sol des deux communes.
 
 ```{r message=FALSE, warning=FALSE}
 ortho <- get_wms_raster(
@@ -65,13 +63,7 @@ ortho <- get_wms_raster(
 
 ### Comparaison des morphologies urbaines
 
-Les orthophotos révèlent des morphologies urbaines très différentes entre 
-les deux communes. Saint-Nazaire présente un tissu urbain dense avec de 
-grands ensembles et des zones industrielles portuaires, reflet de son 
-histoire ouvrière. La Baule-Escoublac se caractérise par un tissu 
-pavillonnaire aéré, des espaces verts et une façade littorale, typique 
-d'une ville balnéaire aisée. Ces différences de morphologie urbaine sont 
-cohérentes avec les inégalités de revenus observées dans l'analyse vecteur.
+Les orthophotos révèlent une urbanisation très différentes entre  les deux communes. Saint-Nazaire présente un tissu urbain dense avec de  grands ensembles et des zones industrielles portuaires, reflet de son  histoire ouvrière. La Baule-Escoublac se caractérise par un tissu  pavillonnaire, des espaces verts et une façade littorale, typique  d'une ville balnéaire aisée. Cela nous laisse donc supposé d'une différence de population importante. Nous pourrons confirmer cette théorie avec des données quantitative lors de l'analyse par vecteur.
 
 ```{r fig.width=10, fig.height=6}
 saint_nazaire <- communes[communes$nom_officiel == "Saint-Nazaire", ]
