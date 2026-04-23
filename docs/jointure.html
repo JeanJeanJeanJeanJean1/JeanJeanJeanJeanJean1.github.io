@@ -348,50 +348,50 @@ div.tocify {
 </div>
 
 
-<div id="jointure-des-données" class="section level2">
-<h2>Jointure des données</h2>
-<div id="calcul-du-revenu-moyen-par-commune" class="section level3">
-<h3>Calcul du revenu moyen par commune</h3>
-<p>On agrège les carreaux par commune pour obtenir un revenu moyen
-communal.</p>
-<pre><code>##           lcog_geo revenu_moyen
-## 1            44055     29062.63
-## 2       4405544069     26912.82
-## 3       4405544132     29188.90
-## 4       4405544135     35354.19
-## 5       4405544151     32317.41
-## 6       4406944055     24924.47
-## 7  440694405544151     23723.44
-## 8       4410344184     20365.69
-## 9       4413244055     29906.90
-## 10      4413244184     29655.93
-## 11           44135     25861.95
-## 12      4413544055     24951.63
-## 13 441354405544069     27169.67
-## 14      4415144055     30261.32
-## 15      4415144184     27022.63
-## 16           44184     25290.61
-## 17      4418444103     19946.41
-## 18      4418444132     29139.90
-## 19      4418444151     25893.04
-## 20      4418444210     21116.88
-## 21 442104410344184     20587.28
-## 22      4421044184     22085.32</code></pre>
+<div id="mise-en-relation-revenus-et-votes" class="section level2">
+<h2>Mise en relation revenus et votes</h2>
+<p>Cette page constitue le cœur de notre analyse : elle met en relation
+les inégalités de revenus mesurées par les carreaux Filosofi avec les
+résultats des élections municipales 2026 pour les deux communes.</p>
+<div id="tableau-comparatif" class="section level3">
+<h3>Tableau comparatif</h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Commune</th>
+<th align="right">Revenu mensuel moyen</th>
+<th align="center">Liste gagnante</th>
+<th align="right">% des voix</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">La Baule-Escoublac</td>
+<td align="right">2372 €/mois</td>
+<td align="center">LUD</td>
+<td align="right">45</td>
+</tr>
+<tr class="even">
+<td align="left">Saint-Nazaire</td>
+<td align="right">1873 €/mois</td>
+<td align="center">LUG</td>
+<td align="right">23</td>
+</tr>
+</tbody>
+</table>
+<p>La différence de revenu mensuel moyen entre les deux communes est de
+<strong>499 €/mois</strong>, soit près de 6 000 €/an. Cette inégalité se
+reflète clairement dans les comportements électoraux : <strong>La
+Baule-Escoublac</strong>, commune la plus aisée, a voté à droite (LUD)
+tandis que <strong>Saint-Nazaire</strong>, commune aux revenus plus
+modestes, a voté à gauche (LDVG) avec une majorité très nette.</p>
+<p><em>Note : les revenus sont sous-estimés en raison des carreaux
+masqués par Filosofi (moins de 11 individus), plus fréquents dans les
+zones peu denses comme La Baule.</em></p>
 </div>
-<div id="jointure-avec-les-résultats-électoraux" class="section level3">
-<h3>Jointure avec les résultats électoraux</h3>
-<pre><code>## Simple feature collection with 2 features and 4 fields
-## Geometry type: MULTIPOLYGON
-## Dimension:     XY
-## Bounding box:  xmin: 290046 ymin: 6694885 xmax: 309633.1 ymax: 6704529
-## Projected CRS: RGF93 v1 / Lambert-93
-##         nom_officiel liste_gagnante Voix.1 Voix.2                       geometry
-## 1 La Baule-Escoublac            LUD   4516   1071 MULTIPOLYGON (((300057.1 67...
-## 2      Saint-Nazaire            LUG   5933   2869 MULTIPOLYGON (((304555.3 67...</code></pre>
-</div>
-<div id="carte-liste-gagnante-par-commune" class="section level3">
-<h3>Carte — liste gagnante par commune</h3>
-<p><img src="jointure_files/figure-html/unnamed-chunk-4-1.png" alt="" width="768" /></p>
+<div id="carte-des-résultats" class="section level3">
+<h3>Carte des résultats</h3>
+<p><img src="jointure_files/figure-html/unnamed-chunk-3-1.png" alt="" width="768" /></p>
 </div>
 </div>
 

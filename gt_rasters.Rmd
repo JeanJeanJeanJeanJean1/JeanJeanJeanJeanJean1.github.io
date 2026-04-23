@@ -52,14 +52,9 @@ communes <- readRDS("data/communes.rds")
 Les orthophotos sont des images aériennes géoréférencées produites par l'IGN à une résolution de 5 mètres par pixel. Elles permettent de visualiser  l'occupation du sol des deux communes.
 
 ```{r message=FALSE, warning=FALSE}
-ortho <- get_wms_raster(
-  x = communes,
-  layer = "ORTHOIMAGERY.ORTHOPHOTOS",
-  res = 5,
-  crs = 2154,
-  verbose = FALSE
-)
+ortho <- readRDS("data/ortho.rds")
 ```
+
 
 ### Comparaison des morphologies urbaines
 

@@ -12,59 +12,95 @@ output:
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
-## Jointure des données
-
 ```{r message=FALSE, warning=FALSE}
+# Chargement des données
 library(sf)
 library(mapsf)
 
-communes <- readRDS("data/communes.rds")
-car_filtre <- readRDS("data/car_filtre.rds")
+communes     <- readRDS("data/communes.rds")
+car_filtre   <- readRDS("data/car_filtre.rds")
 elec2_filtre <- readRDS("data/elec2_filtre.rds")
 ```
 
-### Calcul du revenu moyen par commune
+## Mise en relation revenus et votes
 
-On agrège les carreaux par commune pour obtenir un revenu moyen communal.
+Cette page constitue le cœur de notre analyse : elle met en relation les
+inégalités de revenus mesurées par les carreaux Filosofi avec les résultats
+des élections municipales 2026 pour les deux communes.
+
+### Tableau comparatif
 
 ```{r}
+# Calcul du revenu moyen par carreau
 car_filtre$revenu_moyen <- car_filtre$ind_snv / car_filtre$ind
 
-revenu_commune <- aggregate(
-  car_filtre$revenu_moyen,
-  by = list(commune = car_filtre$lcog_geo),
-  FUN = mean, na.rm = TRUE
+# Jointure spatiale carreaux / communes
+car_avec_commune <- st_join(car_filtre, communes[, c("code_insee", "nom_officiel")])
+
+# Moyenne pondérée par le nombre d'individus
+total_revenus <- aggregate(
+  car_avec_commune$revenu_moyen / 12 * car_avec_commune$ind,
+  by = list(Commune = car_avec_commune$nom_officiel),
+  FUN = sum, na.rm = TRUE
 )
-names(revenu_commune) <- c("lcog_geo", "revenu_moyen")
-revenu_commune
+total_ind <- aggregate(
+  car_avec_commune$ind,
+  by = list(Commune = car_avec_commune$nom_officiel),
+  FUN = sum, na.rm = TRUE
+)
+revenu_pondere <- data.frame(
+  Commune = total_revenus$Commune,
+  revenu_mensuel = round(total_revenus$x / total_ind$x)
+)
+
+# Résultats électoraux
+elec2_filtre$liste_gagnante <- ifelse(
+  elec2_filtre$Voix.1 > elec2_filtre$Voix.2,
+  elec2_filtre$Nuance.liste.1,
+  elec2_filtre$Nuance.liste.2
+)
+elec2_filtre$voix_gagnant <- ifelse(
+  elec2_filtre$Voix.1 > elec2_filtre$Voix.2,
+  elec2_filtre$Voix.1,
+  elec2_filtre$Voix.2
+)
+elec2_filtre$pct_gagnant <- round(
+  elec2_filtre$voix_gagnant / elec2_filtre$Exprimés * 100, 1
+)
+
+# Fusion des deux tableaux
+tableau <- merge(
+  revenu_pondere,
+  elec2_filtre[, c("Libellé.commune", "liste_gagnante", "pct_gagnant")],
+  by.x = "Commune",
+  by.y = "Libellé.commune"
+)
+tableau$revenu_mensuel <- paste0(tableau$revenu_mensuel, " €/mois")
+names(tableau) <- c("Commune", "Revenu mensuel moyen", "Liste gagnante", "% des voix")
+
+knitr::kable(tableau, align = c("l", "r", "c", "r"))
 ```
 
-### Jointure avec les résultats électoraux
+La différence de revenu mensuel moyen entre les deux communes est de **499 €/mois**,
+soit près de 6 000 €/an. Cette inégalité se reflète clairement dans les
+comportements électoraux : **La Baule-Escoublac**, commune la plus aisée, a voté
+à droite (LUD) tandis que **Saint-Nazaire**, commune aux revenus plus modestes,
+a voté à gauche (LDVG) avec une majorité très nette.
 
-```{r}
-elec2_filtre$code_insee <- elec2_filtre$Code.commune
+*Note : les revenus sont sous-estimés en raison des carreaux masqués par
+Filosofi (moins de 11 individus), plus fréquents dans les zones peu denses
+comme La Baule.*
 
-jointure <- merge(
-  communes,
-  elec2_filtre[, c("Code.commune", "Libellé.commune", 
-                    "Nuance.liste.1", "Voix.1",
-                    "Nuance.liste.2", "Voix.2")],
-  by.x = "code_insee",
-  by.y = "Code.commune"
-)
-
-jointure$liste_gagnante <- ifelse(
-  jointure$Voix.1 > jointure$Voix.2,
-  jointure$Nuance.liste.1,
-  jointure$Nuance.liste.2
-)
-
-jointure[, c("nom_officiel", "liste_gagnante", "Voix.1", "Voix.2")]
-```
-
-### Carte — liste gagnante par commune
+### Carte des résultats
 
 ```{r fig.width=8, fig.height=6}
+jointure <- merge(
+  communes,
+  elec2_filtre[, c("Libellé.commune", "liste_gagnante")],
+  by.x = "nom_officiel",
+  by.y = "Libellé.commune"
+)
+
 mf_map(jointure, type = "typo", var = "liste_gagnante",
        pal = c("steelblue", "firebrick"),
        leg_title = "Liste gagnante (2e tour)")
