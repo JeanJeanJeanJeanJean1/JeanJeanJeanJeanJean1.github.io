@@ -29,13 +29,19 @@ flowchart LR
   G --> H[Carte des revenus]
 </div>
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-<script>mermaid.initialize({startOnLoad:true});</script>
+<script>
+window.addEventListener("load", function() {
+  mermaid.initialize({startOnLoad:false});
+  mermaid.init(undefined, document.querySelectorAll(".mermaid"));
+});
+</script>
 ')
 ```
 
 
 
 ```{r message=FALSE, warning=FALSE}
+#Chargement des données
 library(sf)
 library(mapsf)
 
@@ -43,20 +49,21 @@ communes <- readRDS("data/communes.rds")
 car_filtre <- readRDS("data/car_filtre.rds")
 ```
 
-### Calcul du revenu médian par carreau
+### Calcul du revenu moyen par carreau
 
-La variable `ind_snv` contient la somme des niveaux de vie de tous les 
-individus du carreau. On divise par `ind` (nombre d'individus) pour obtenir 
-le niveau de vie moyen par carreau.
+La variable `ind_snv` contient la somme des niveaux de vie de tous les
+individus du carreau. On la divise par `ind` (nombre d'individus) pour
+obtenir le revenu moyen par carreau.
 
-```{r}
-car_filtre$revenu_moyen <- car_filtre$ind_snv / car_filtre$ind
-summary(car_filtre$revenu_moyen)
-```
+Les revenus varient entre **13 716 €/an** (carreaux les plus pauvres)
+et **41 658 €/an** (carreaux les plus aisés), avec une médiane à
+**26 421 €/an** sur l'ensemble des deux communes.
 
 ### Carte des revenus
 
 ```{r fig.width=10, fig.height=7}
+car_filtre$revenu_moyen <- car_filtre$ind_snv / car_filtre$ind
+
 mf_map(communes, type = "base", col = "grey90", border = "white")
 mf_map(
   car_filtre,
@@ -66,16 +73,11 @@ mf_map(
   nbreaks = 5,
   pal = "Mint",
   border = NA,
+  leg_title = "Revenu moyen (euros/an)",
   add = TRUE
 )
 mf_map(communes, type = "base", col = NA, border = "steelblue", lwd = 2, add = TRUE)
 mf_label(communes, var = "nom_officiel", halo = TRUE, cex = 0.8)
-mf_legend(
-  type = "choro",
-  val = levels(cut(car_filtre$revenu_moyen, breaks = quantile(car_filtre$revenu_moyen, probs = seq(0,1,0.2), na.rm = TRUE))),
-  pal = "Mint",
-  title = "Revenu moyen (€/an)"
-)
 mf_title("Revenus moyens par carreau de 200m — Saint-Nazaire et La Baule")
 mf_credits("Source : INSEE Filosofi 2021")
 ```

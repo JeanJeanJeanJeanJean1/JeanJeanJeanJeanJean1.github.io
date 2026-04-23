@@ -364,20 +364,27 @@ flowchart LR
   G --> H[Carte des revenus]
 </div>
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-<script>mermaid.initialize({startOnLoad:true});</script>
+<script>
+window.addEventListener("load", function() {
+  mermaid.initialize({startOnLoad:false});
+  mermaid.init(undefined, document.querySelectorAll(".mermaid"));
+});
+</script>
 
 </div>
-<div id="calcul-du-revenu-médian-par-carreau" class="section level3">
-<h3>Calcul du revenu médian par carreau</h3>
+<div id="calcul-du-revenu-moyen-par-carreau" class="section level3">
+<h3>Calcul du revenu moyen par carreau</h3>
 <p>La variable <code>ind_snv</code> contient la somme des niveaux de vie
-de tous les individus du carreau. On divise par <code>ind</code> (nombre
-d’individus) pour obtenir le niveau de vie moyen par carreau.</p>
-<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##   13716   23776   26421   26624   29605   41658</code></pre>
+de tous les individus du carreau. On la divise par <code>ind</code>
+(nombre d’individus) pour obtenir le revenu moyen par carreau.</p>
+<p>Les revenus varient entre <strong>13 716 €/an</strong> (carreaux les
+plus pauvres) et <strong>41 658 €/an</strong> (carreaux les plus aisés),
+avec une médiane à <strong>26 421 €/an</strong> sur l’ensemble des deux
+communes.</p>
 </div>
 <div id="carte-des-revenus" class="section level3">
 <h3>Carte des revenus</h3>
-<p><img src="gt_vecteurs_files/figure-html/unnamed-chunk-4-1.png" alt="" width="960" /></p>
+<p><img src="gt_vecteurs_files/figure-html/unnamed-chunk-3-1.png" alt="" width="960" /></p>
 </div>
 </div>
 
