@@ -25,8 +25,11 @@ flowchart LR
   C --> D{mask + crop par commune}
   D --> E[ortho_sn Saint-Nazaire]
   D --> F[ortho_lb La Baule]
-  E --> G[Visualisation comparative]
-  F --> G
+  G[car_filtre.rds] --> H{filtre ind >= 11}
+  H --> I{discrétisation 3 niveaux}
+  I --> J[Superposition sur orthophoto]
+  E --> J
+  F --> J
 </div>
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>
@@ -42,33 +45,67 @@ window.addEventListener("load", function() {
 # Chargement des données
 library(sf)
 library(terra)
-library(happign)
 
-communes <- readRDS("data/communes.rds")
+communes  <- readRDS("data/communes.rds")
+ortho     <- readRDS("data/ortho.rds")
+car_filtre <- readRDS("data/car_filtre.rds")
 ```
 
 ### Récupération de l'orthophoto IGN
 
-Les orthophotos sont des images aériennes géoréférencées produites par l'IGN à une résolution de 5 mètres par pixel. Elles permettent de visualiser  l'occupation du sol des deux communes.
+Les orthophotos sont des images aériennes géoréférencées produites par l'IGN
+à une résolution de 5 mètres par pixel. Elles permettent de visualiser
+l'occupation du sol et la densité de population des deux communes.
 
-```{r message=FALSE, warning=FALSE}
-ortho <- readRDS("data/ortho.rds")
-```
+### Comparaison des morphologies urbaines et densités de population
 
+Les orthophotos révèlent une urbanisation très différente entre les deux
+communes. Saint-Nazaire présente un tissu urbain dense avec de grands
+ensembles et des zones industrielles portuaires, reflet de son histoire
+ouvrière. La Baule-Escoublac se caractérise par un tissu pavillonnaire,
+des espaces verts et une façade littorale, typique d'une ville balnéaire
+aisée.
 
-### Comparaison des morphologies urbaines
-
-Les orthophotos révèlent une urbanisation très différentes entre  les deux communes. Saint-Nazaire présente un tissu urbain dense avec de  grands ensembles et des zones industrielles portuaires, reflet de son  histoire ouvrière. La Baule-Escoublac se caractérise par un tissu  pavillonnaire, des espaces verts et une façade littorale, typique  d'une ville balnéaire aisée. Cela nous laisse donc supposé d'une différence de population importante. Nous pourrons confirmer cette théorie avec des données quantitative lors de l'analyse par vecteur.
+Les carreaux Filosofi (population ≥ 11 individus) sont superposés en trois
+niveaux de densité : faible (jaune), moyen (orange) et fort (rouge).
 
 ```{r fig.width=10, fig.height=6}
 saint_nazaire <- communes[communes$nom_officiel == "Saint-Nazaire", ]
-la_baule <- communes[communes$nom_officiel == "La Baule-Escoublac", ]
+la_baule      <- communes[communes$nom_officiel == "La Baule-Escoublac", ]
 
 ortho_sn <- mask(crop(ortho, saint_nazaire), vect(saint_nazaire))
 ortho_lb <- mask(crop(ortho, la_baule), vect(la_baule))
 
+car_dense <- car_filtre[car_filtre$ind >= 11, ]
+
+car_sn <- car_dense[st_within(car_dense, saint_nazaire, sparse=FALSE)[,1],]
+car_lb <- car_dense[st_within(car_dense, la_baule, sparse=FALSE)[,1],]
+
+car_sn$niveau <- cut(car_sn$ind,
+                     breaks = quantile(car_sn$ind, probs = c(0, 0.33, 0.66, 1), na.rm = TRUE),
+                     labels = c("faible", "moyen", "fort"),
+                     include.lowest = TRUE)
+
+car_lb$niveau <- cut(car_lb$ind,
+                     breaks = quantile(car_lb$ind, probs = c(0, 0.33, 0.66, 1), na.rm = TRUE),
+                     labels = c("faible", "moyen", "fort"),
+                     include.lowest = TRUE)
+
+couleurs <- c("faible" = adjustcolor("yellow", alpha.f = 0.4),
+              "moyen"  = adjustcolor("orange", alpha.f = 0.4),
+              "fort"   = adjustcolor("red",    alpha.f = 0.5))
+
 par(mfrow = c(1, 2))
-plot(ortho_sn, main = "Saint-Nazaire — tissu urbain dense")
-plot(ortho_lb, main = "La Baule-Escoublac — tissu pavillonnaire")
+
+plotRGB(ortho_sn, main = "Saint-Nazaire")
+plot(st_geometry(car_sn),
+     col = couleurs[car_sn$niveau],
+     border = NA, add = TRUE)
+
+plotRGB(ortho_lb, main = "La Baule-Escoublac")
+plot(st_geometry(car_lb),
+     col = couleurs[car_lb$niveau],
+     border = NA, add = TRUE)
+
 par(mfrow = c(1, 1))
 ```
