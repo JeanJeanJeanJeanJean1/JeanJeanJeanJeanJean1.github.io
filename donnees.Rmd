@@ -55,10 +55,3 @@ mf_label(communes_wgs84, var = "nom_officiel", halo = TRUE, cex = 0.9)
 mf_title("Zone d'étude : Saint-Nazaire et La Baule-Escoublac")
 mf_credits("Fond de carte : OpenStreetMap")
 ```
-
-## Limites des données
-
-- Les carreaux Filosofi dont la population est inférieure à 11 individus 
-sont masqués pour des raisons de confidentialité statistique.
-- Les résultats électoraux sont agrégés à l'échelle communale et ne 
-permettent pas une analyse infra-communale directe.

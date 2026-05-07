@@ -28,9 +28,6 @@ majoritairement à gauche (LDVG, 12 532 voix au 2e tour), tandis que
 - L'analyse est menée à l'échelle communale — une analyse infra-communale 
 par bureau de vote aurait été plus fine mais nécessite les périmètres 
 des bureaux de vote.
-- Les carreaux Filosofi avec moins de 11 individus sont masqués pour 
-des raisons de confidentialité, ce qui crée des zones blanches dans 
-les communes les moins denses.
 - Le lien revenus/votes est une corrélation, pas une causalité — d'autres 
 facteurs (âge, catégorie socio-professionnelle, histoire locale) jouent 
 également un rôle.
